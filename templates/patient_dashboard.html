@@ -1,0 +1,113 @@
+{% extends 'layout.html' %}
+{% block content %}
+<h2>Welcome {{ name }}</h2>
+<a href="{{ url_for('book_appointment') }}" class="btn btn-primary">Book New Appointment</a>
+<h3>Your Appointments:</h3>
+<table border="1">
+    <tr>
+        <th>Doctor</th>
+        <th>Date</th>
+        <th>Time</th>
+        <th>Reason</th>
+        <th>Status</th>
+        <th>Action</th>
+    </tr>
+    {% for app in appointments %}
+    <tr class="appointment-row status-{{ app.status.lower() }}">
+        <td>{{ app.doctor_name }}</td>
+        <td>{{ app.date }}</td>
+        <td><strong>{{ app.time_slot or 'Not specified' }}</strong></td>
+        <td>{{ app.reason }}</td>
+        <td>
+            <span class="status-badge status-{{ app.status.lower() }}">
+                {{ app.status }}
+            </span>
+        </td>
+        <td>
+            <a href="{{ url_for('delete_appointment', appointment_id=app.id) }}" class="btn btn-cancel" onclick="return confirm('Are you sure you want to cancel this appointment?')">Cancel</a>
+        </td>
+    </tr>
+    {% endfor %}
+    {% if not appointments %}
+    <tr>
+        <td colspan="6" style="text-align: center; color: #666; font-style: italic;">No appointments found</td>
+    </tr>
+    {% endif %}
+</table>
+
+<style>
+.btn-primary {
+    background-color: #0077cc;
+    color: white;
+    padding: 12px 24px;
+    text-decoration: none;
+    border-radius: 5px;
+    font-weight: bold;
+    display: inline-block;
+    margin-bottom: 20px;
+    transition: background-color 0.3s ease;
+}
+
+.btn-primary:hover {
+    background-color: #005fa3;
+    text-decoration: none;
+}
+
+.appointment-row {
+    transition: background-color 0.3s ease;
+}
+
+.appointment-row:hover {
+    background-color: #f0f8ff;
+}
+
+.status-badge {
+    padding: 4px 8px;
+    border-radius: 4px;
+    font-size: 0.85em;
+    font-weight: bold;
+    text-transform: uppercase;
+}
+
+.status-pending {
+    background-color: #fff3cd;
+    color: #856404;
+}
+
+.status-approved {
+    background-color: #d4edda;
+    color: #155724;
+}
+
+.status-rejected {
+    background-color: #f8d7da;
+    color: #721c24;
+}
+
+.btn {
+    padding: 6px 12px;
+    margin: 2px;
+    text-decoration: none;
+    border-radius: 4px;
+    font-size: 0.9em;
+    font-weight: 500;
+    display: inline-block;
+    transition: all 0.3s ease;
+}
+
+.btn-cancel {
+    background-color: #dc3545;
+    color: white;
+}
+
+.btn-cancel:hover {
+    background-color: #c82333;
+    text-decoration: none;
+}
+
+table td:nth-child(3) {
+    color: #0077cc;
+    font-weight: 600;
+}
+</style>
+{% endblock %}

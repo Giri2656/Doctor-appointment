@@ -1,0 +1,155 @@
+{% extends 'layout.html' %}
+{% block content %}
+<h2>Book Appointment</h2>
+
+<!-- Flash messages -->
+{% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+        {% for category, message in messages %}
+            <div class="alert alert-{{ category }}">{{ message }}</div>
+        {% endfor %}
+    {% endif %}
+{% endwith %}
+
+<form method="post" id="appointmentForm">
+    <label>Select Doctor:
+        <select name="doctor_id" id="doctorSelect" required>
+            <option value="">-- Select a Doctor --</option>
+            {% for doctor in doctors %}
+                <option value="{{ doctor.id }}">{{ doctor.name }}</option>
+            {% endfor %}
+        </select>
+    </label><br>
+    
+    <label>Date: 
+        <input type="date" name="date" id="dateInput" required>
+    </label><br>
+    
+    <label>Time Slot:
+        <select name="time_slot" id="timeSlotSelect" required disabled>
+            <option value="">-- Select Date and Doctor First --</option>
+        </select>
+    </label><br>
+    
+    <label>Reason: 
+        <input type="text" name="reason" required placeholder="Enter reason for appointment">
+    </label><br>
+    
+    <button type="submit" id="bookButton" disabled>Book Appointment</button>
+</form>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const doctorSelect = document.getElementById('doctorSelect');
+    const dateInput = document.getElementById('dateInput');
+    const timeSlotSelect = document.getElementById('timeSlotSelect');
+    const bookButton = document.getElementById('bookButton');
+    
+    // Set minimum date to today
+    const today = new Date().toISOString().split('T')[0];
+    dateInput.min = today;
+    
+    function checkAvailability() {
+        const doctorId = doctorSelect.value;
+        const date = dateInput.value;
+        
+        if (!doctorId || !date) {
+            timeSlotSelect.innerHTML = '<option value="">-- Select Date and Doctor First --</option>';
+            timeSlotSelect.disabled = true;
+            bookButton.disabled = true;
+            return;
+        }
+        
+        // Show loading message
+        timeSlotSelect.innerHTML = '<option value="">Loading available slots...</option>';
+        timeSlotSelect.disabled = true;
+        bookButton.disabled = true;
+        
+        // Fetch available time slots
+        fetch(`/check_availability?doctor_id=${doctorId}&date=${date}`)
+            .then(response => response.json())
+            .then(data => {
+                timeSlotSelect.innerHTML = '';
+                
+                if (data.available_slots.length === 0) {
+                    timeSlotSelect.innerHTML = '<option value="">No slots available for this date</option>';
+                    timeSlotSelect.disabled = true;
+                    bookButton.disabled = true;
+                } else {
+                    timeSlotSelect.innerHTML = '<option value="">-- Select a Time Slot --</option>';
+                    data.available_slots.forEach(slot => {
+                        const option = document.createElement('option');
+                        option.value = slot;
+                        option.textContent = slot;
+                        timeSlotSelect.appendChild(option);
+                    });
+                    timeSlotSelect.disabled = false;
+                }
+            })
+            .catch(error => {
+                console.error('Error fetching availability:', error);
+                timeSlotSelect.innerHTML = '<option value="">Error loading slots</option>';
+                timeSlotSelect.disabled = true;
+                bookButton.disabled = true;
+            });
+    }
+    
+    function validateForm() {
+        const doctorId = doctorSelect.value;
+        const date = dateInput.value;
+        const timeSlot = timeSlotSelect.value;
+        
+        bookButton.disabled = !(doctorId && date && timeSlot);
+    }
+    
+    // Event listeners
+    doctorSelect.addEventListener('change', checkAvailability);
+    dateInput.addEventListener('change', checkAvailability);
+    timeSlotSelect.addEventListener('change', validateForm);
+    
+    // Prevent form submission if validation fails
+    document.getElementById('appointmentForm').addEventListener('submit', function(e) {
+        if (!doctorSelect.value || !dateInput.value || !timeSlotSelect.value) {
+            e.preventDefault();
+            alert('Please fill in all required fields.');
+        }
+    });
+});
+</script>
+
+<style>
+.alert {
+    padding: 15px;
+    margin-bottom: 20px;
+    border-radius: 5px;
+    font-weight: bold;
+}
+
+.alert-success {
+    background-color: #d4edda;
+    color: #155724;
+    border: 1px solid #c3e6cb;
+}
+
+.alert-error {
+    background-color: #f8d7da;
+    color: #721c24;
+    border: 1px solid #f5c6cb;
+}
+
+#timeSlotSelect:disabled {
+    background-color: #f5f5f5;
+    color: #999;
+}
+
+#bookButton:disabled {
+    background-color: #ccc;
+    color: #666;
+    cursor: not-allowed;
+}
+
+#bookButton:disabled:hover {
+    background-color: #ccc;
+}
+</style>
+{% endblock %}
