@@ -1,42 +1,111 @@
 {% extends 'layout.html' %}
+{% block title %}Book Appointment - MediCare Professional Healthcare{% endblock %}
+
 {% block content %}
-<h2>Book Appointment</h2>
+<div class="min-h-screen flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
+    <div class="max-w-2xl w-full space-y-8">
+        <!-- Appointment Booking Card -->
+        <div class="bg-white/10 backdrop-blur-lg rounded-3xl p-8 border border-white/20 shadow-2xl">
+            <!-- Header -->
+            <div class="text-center mb-8">
+                <div class="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-r from-primary-500 to-primary-600 rounded-full mb-6">
+                    <i class="fas fa-calendar-plus text-white text-2xl"></i>
+                </div>
+                <h2 class="text-3xl font-bold text-white mb-2">Book Your Appointment</h2>
+                <p class="text-white/80">Schedule a consultation with your preferred doctor</p>
+            </div>
 
-<!-- Flash messages -->
-{% with messages = get_flashed_messages(with_categories=true) %}
-    {% if messages %}
-        {% for category, message in messages %}
-            <div class="alert alert-{{ category }}">{{ message }}</div>
-        {% endfor %}
-    {% endif %}
-{% endwith %}
+            <!-- Flash Messages -->
+            {% with messages = get_flashed_messages(with_categories=true) %}
+                {% if messages %}
+                    {% for category, message in messages %}
+                        <div class="mb-6 p-4 rounded-xl border-l-4 {% if category == 'success' %}bg-green-50 border-green-400 text-green-700{% elif category == 'error' %}bg-red-50 border-red-400 text-red-700{% else %}bg-blue-50 border-blue-400 text-blue-700{% endif %}">
+                            <div class="flex items-center">
+                                <i class="fas fa-{% if category == 'success' %}check-circle{% elif category == 'error' %}exclamation-circle{% else %}info-circle{% endif %} mr-3"></i>
+                                <span class="font-medium">{{ message }}</span>
+                            </div>
+                        </div>
+                    {% endfor %}
+                {% endif %}
+            {% endwith %}
 
-<form method="post" id="appointmentForm">
-    <label>Select Doctor:
-        <select name="doctor_id" id="doctorSelect" required>
-            <option value="">-- Select a Doctor --</option>
-            {% for doctor in doctors %}
-                <option value="{{ doctor.id }}">{{ doctor.name }}</option>
-            {% endfor %}
-        </select>
-    </label><br>
-    
-    <label>Date: 
-        <input type="date" name="date" id="dateInput" required>
-    </label><br>
-    
-    <label>Time Slot:
-        <select name="time_slot" id="timeSlotSelect" required disabled>
-            <option value="">-- Select Date and Doctor First --</option>
-        </select>
-    </label><br>
-    
-    <label>Reason: 
-        <input type="text" name="reason" required placeholder="Enter reason for appointment">
-    </label><br>
-    
-    <button type="submit" id="bookButton" disabled>Book Appointment</button>
-</form>
+            <!-- Appointment Form -->
+            <form method="post" id="appointmentForm" class="space-y-6">
+                <div>
+                    <label for="doctorSelect" class="block text-sm font-semibold text-white mb-2">
+                        <i class="fas fa-user-md mr-2 text-primary-300"></i>
+                        Select Doctor
+                    </label>
+                    <select name="doctor_id" 
+                            id="doctorSelect" 
+                            required 
+                            class="w-full px-4 py-3 bg-white/10 border border-white/20 rounded-xl text-white focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all duration-200">
+                        <option value="" class="text-gray-800">Choose a doctor</option>
+                        {% for doctor in doctors %}
+                            <option value="{{ doctor.id }}" class="text-gray-800">Dr. {{ doctor.name }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                
+                <div>
+                    <label for="dateInput" class="block text-sm font-semibold text-white mb-2">
+                        <i class="fas fa-calendar mr-2 text-primary-300"></i>
+                        Appointment Date
+                    </label>
+                    <input type="date" 
+                           name="date" 
+                           id="dateInput" 
+                           required 
+                           class="w-full px-4 py-3 bg-white/10 border border-white/20 rounded-xl text-white focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all duration-200">
+                </div>
+                
+                <div>
+                    <label for="timeSlotSelect" class="block text-sm font-semibold text-white mb-2">
+                        <i class="fas fa-clock mr-2 text-primary-300"></i>
+                        Time Slot
+                    </label>
+                    <select name="time_slot" 
+                            id="timeSlotSelect" 
+                            required 
+                            disabled
+                            class="w-full px-4 py-3 bg-white/10 border border-white/20 rounded-xl text-white focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed">
+                        <option value="" class="text-gray-800">Select date and doctor first</option>
+                    </select>
+                </div>
+                
+                <div>
+                    <label for="reasonInput" class="block text-sm font-semibold text-white mb-2">
+                        <i class="fas fa-sticky-note mr-2 text-primary-300"></i>
+                        Reason for Visit
+                    </label>
+                    <input type="text" 
+                           name="reason" 
+                           id="reasonInput" 
+                           required 
+                           class="w-full px-4 py-3 bg-white/10 border border-white/20 rounded-xl text-white placeholder-white/50 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all duration-200"
+                           placeholder="Briefly describe your symptoms or reason for appointment">
+                </div>
+                
+                <button type="submit" 
+                        id="bookButton" 
+                        disabled
+                        class="w-full flex items-center justify-center px-6 py-3 bg-gradient-to-r from-primary-500 to-primary-600 text-white font-semibold rounded-xl hover:from-primary-600 hover:to-primary-700 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2 transition-all duration-200 hover:scale-105 shadow-lg disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100">
+                    <i class="fas fa-calendar-check mr-3"></i>
+                    <span id="buttonText">Book Appointment</span>
+                </button>
+            </form>
+            
+            <!-- Back to Dashboard -->
+            <div class="text-center mt-8">
+                <a href="{{ url_for('patient_dashboard') }}" 
+                   class="inline-flex items-center px-6 py-3 bg-white/10 text-white font-semibold rounded-xl hover:bg-white/20 transition-all duration-200 border border-white/20 hover:scale-105">
+                    <i class="fas fa-arrow-left mr-3"></i>
+                    Back to Dashboard
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
 
 <script>
 document.addEventListener('DOMContentLoaded', function() {
@@ -44,6 +113,7 @@ document.addEventListener('DOMContentLoaded', function() {
     const dateInput = document.getElementById('dateInput');
     const timeSlotSelect = document.getElementById('timeSlotSelect');
     const bookButton = document.getElementById('bookButton');
+    const buttonText = document.getElementById('buttonText');
     
     // Set minimum date to today
     const today = new Date().toISOString().split('T')[0];
@@ -54,16 +124,17 @@ document.addEventListener('DOMContentLoaded', function() {
         const date = dateInput.value;
         
         if (!doctorId || !date) {
-            timeSlotSelect.innerHTML = '<option value="">-- Select Date and Doctor First --</option>';
+            timeSlotSelect.innerHTML = '<option value="" class="text-gray-800">Select date and doctor first</option>';
             timeSlotSelect.disabled = true;
             bookButton.disabled = true;
             return;
         }
         
-        // Show loading message
-        timeSlotSelect.innerHTML = '<option value="">Loading available slots...</option>';
+        // Show loading state
+        timeSlotSelect.innerHTML = '<option value="" class="text-gray-800">Loading available slots...</option>';
         timeSlotSelect.disabled = true;
         bookButton.disabled = true;
+        buttonText.textContent = 'Loading...';
         
         // Fetch available time slots
         fetch(`/check_availability?doctor_id=${doctorId}&date=${date}`)
@@ -72,25 +143,29 @@ document.addEventListener('DOMContentLoaded', function() {
                 timeSlotSelect.innerHTML = '';
                 
                 if (data.available_slots.length === 0) {
-                    timeSlotSelect.innerHTML = '<option value="">No slots available for this date</option>';
+                    timeSlotSelect.innerHTML = '<option value="" class="text-gray-800">No slots available for this date</option>';
                     timeSlotSelect.disabled = true;
                     bookButton.disabled = true;
+                    buttonText.textContent = 'No Slots Available';
                 } else {
-                    timeSlotSelect.innerHTML = '<option value="">-- Select a Time Slot --</option>';
+                    timeSlotSelect.innerHTML = '<option value="" class="text-gray-800">Select a time slot</option>';
                     data.available_slots.forEach(slot => {
                         const option = document.createElement('option');
                         option.value = slot;
                         option.textContent = slot;
+                        option.className = 'text-gray-800';
                         timeSlotSelect.appendChild(option);
                     });
                     timeSlotSelect.disabled = false;
+                    buttonText.textContent = 'Book Appointment';
                 }
             })
             .catch(error => {
                 console.error('Error fetching availability:', error);
-                timeSlotSelect.innerHTML = '<option value="">Error loading slots</option>';
+                timeSlotSelect.innerHTML = '<option value="" class="text-gray-800">Error loading slots</option>';
                 timeSlotSelect.disabled = true;
                 bookButton.disabled = true;
+                buttonText.textContent = 'Error Loading Slots';
             });
     }
     
@@ -98,58 +173,39 @@ document.addEventListener('DOMContentLoaded', function() {
         const doctorId = doctorSelect.value;
         const date = dateInput.value;
         const timeSlot = timeSlotSelect.value;
+        const reason = document.getElementById('reasonInput').value.trim();
         
-        bookButton.disabled = !(doctorId && date && timeSlot);
+        const isValid = doctorId && date && timeSlot && reason;
+        bookButton.disabled = !isValid;
+        
+        if (isValid) {
+            buttonText.textContent = 'Book Appointment';
+        }
     }
     
     // Event listeners
     doctorSelect.addEventListener('change', checkAvailability);
     dateInput.addEventListener('change', checkAvailability);
     timeSlotSelect.addEventListener('change', validateForm);
+    document.getElementById('reasonInput').addEventListener('input', validateForm);
     
     // Prevent form submission if validation fails
     document.getElementById('appointmentForm').addEventListener('submit', function(e) {
-        if (!doctorSelect.value || !dateInput.value || !timeSlotSelect.value) {
+        const doctorId = doctorSelect.value;
+        const date = dateInput.value;
+        const timeSlot = timeSlotSelect.value;
+        const reason = document.getElementById('reasonInput').value.trim();
+        
+        if (!doctorId || !date || !timeSlot || !reason) {
             e.preventDefault();
             alert('Please fill in all required fields.');
+            return;
         }
+        
+        // Show loading state on submit
+        buttonText.textContent = 'Booking...';
+        bookButton.disabled = true;
     });
 });
 </script>
-
-<style>
-.alert {
-    padding: 15px;
-    margin-bottom: 20px;
-    border-radius: 5px;
-    font-weight: bold;
-}
-
-.alert-success {
-    background-color: #d4edda;
-    color: #155724;
-    border: 1px solid #c3e6cb;
-}
-
-.alert-error {
-    background-color: #f8d7da;
-    color: #721c24;
-    border: 1px solid #f5c6cb;
-}
-
-#timeSlotSelect:disabled {
-    background-color: #f5f5f5;
-    color: #999;
-}
-
-#bookButton:disabled {
-    background-color: #ccc;
-    color: #666;
-    cursor: not-allowed;
-}
-
-#bookButton:disabled:hover {
-    background-color: #ccc;
-}
-</style>
 {% endblock %}

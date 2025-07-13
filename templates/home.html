@@ -1,6 +1,160 @@
 {% extends 'layout.html' %}
+{% block title %}Welcome - MediCare Professional Healthcare{% endblock %}
 
 {% block content %}
-    <h2>Welcome to the Doctor Appointment Booking System</h2>
-    <p>Please log in or sign up to continue.</p>
+<!-- Hero Section -->
+<div class="text-center py-16 px-4 animate-fade-in">
+    <div class="max-w-4xl mx-auto">
+        <div class="mb-8">
+            <div class="inline-flex items-center justify-center w-20 h-20 bg-gradient-to-r from-primary-500 to-primary-600 rounded-full mb-6">
+                <i class="fas fa-heartbeat text-white text-3xl animate-heartbeat"></i>
+            </div>
+            <h1 class="text-5xl md:text-6xl font-bold text-white mb-6 leading-tight">
+                Welcome to 
+                <span class="text-gradient">MediCare</span>
+            </h1>
+            <p class="text-xl md:text-2xl text-white/90 mb-8 leading-relaxed">
+                Your trusted platform for seamless doctor appointment booking and professional healthcare management
+            </p>
+        </div>
+        
+        <!-- Feature Highlights -->
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12">
+            <div class="flex items-center justify-center space-x-3 text-white/90">
+                <div class="w-12 h-12 bg-white/20 rounded-full flex items-center justify-center">
+                    <i class="fas fa-calendar-check text-primary-300 text-lg"></i>
+                </div>
+                <span class="font-medium">Easy Appointment Booking</span>
+            </div>
+            <div class="flex items-center justify-center space-x-3 text-white/90">
+                <div class="w-12 h-12 bg-white/20 rounded-full flex items-center justify-center">
+                    <i class="fas fa-user-md text-primary-300 text-lg"></i>
+                </div>
+                <span class="font-medium">Qualified Doctors</span>
+            </div>
+            <div class="flex items-center justify-center space-x-3 text-white/90">
+                <div class="w-12 h-12 bg-white/20 rounded-full flex items-center justify-center">
+                    <i class="fas fa-clock text-primary-300 text-lg"></i>
+                </div>
+                <span class="font-medium">24/7 Availability</span>
+            </div>
+        </div>
+        
+        <!-- Call to Action Buttons -->
+        <div class="flex flex-col sm:flex-row gap-4 justify-center">
+            <a href="{{ url_for('login') }}" 
+               class="inline-flex items-center justify-center px-8 py-4 bg-white text-primary-600 font-semibold rounded-xl hover:bg-gray-100 transition-all duration-200 hover:scale-105 shadow-lg">
+                <i class="fas fa-sign-in-alt mr-3 text-lg"></i>
+                Sign In
+            </a>
+            <a href="{{ url_for('register') }}" 
+               class="inline-flex items-center justify-center px-8 py-4 bg-gradient-to-r from-primary-500 to-primary-600 text-white font-semibold rounded-xl hover:from-primary-600 hover:to-primary-700 transition-all duration-200 hover:scale-105 shadow-lg">
+                <i class="fas fa-user-plus mr-3 text-lg"></i>
+                Get Started
+            </a>
+        </div>
+    </div>
+</div>
+
+<!-- Features Section -->
+<div class="py-16 px-4">
+    <div class="max-w-6xl mx-auto">
+        <div class="text-center mb-16">
+            <h2 class="text-4xl font-bold text-white mb-4">Why Choose MediCare?</h2>
+            <p class="text-xl text-white/80 max-w-2xl mx-auto">
+                Experience the future of healthcare management with our comprehensive platform
+            </p>
+        </div>
+        
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+            <!-- Feature Card 1 -->
+            <div class="bg-white/10 backdrop-blur-lg rounded-2xl p-8 text-center card-hover border border-white/20">
+                <div class="w-16 h-16 bg-gradient-to-r from-primary-500 to-primary-600 rounded-full flex items-center justify-center mx-auto mb-6">
+                    <i class="fas fa-calendar-alt text-white text-2xl"></i>
+                </div>
+                <h3 class="text-xl font-semibold text-white mb-4">Smart Scheduling</h3>
+                <p class="text-white/80 leading-relaxed">
+                    Book appointments with your preferred doctors at convenient times with our intelligent scheduling system.
+                </p>
+            </div>
+            
+            <!-- Feature Card 2 -->
+            <div class="bg-white/10 backdrop-blur-lg rounded-2xl p-8 text-center card-hover border border-white/20">
+                <div class="w-16 h-16 bg-gradient-to-r from-secondary-500 to-secondary-600 rounded-full flex items-center justify-center mx-auto mb-6">
+                    <i class="fas fa-bell text-white text-2xl"></i>
+                </div>
+                <h3 class="text-xl font-semibold text-white mb-4">Instant Notifications</h3>
+                <p class="text-white/80 leading-relaxed">
+                    Receive real-time updates about your appointments, confirmations, and reminders.
+                </p>
+            </div>
+            
+            <!-- Feature Card 3 -->
+            <div class="bg-white/10 backdrop-blur-lg rounded-2xl p-8 text-center card-hover border border-white/20">
+                <div class="w-16 h-16 bg-gradient-to-r from-purple-500 to-purple-600 rounded-full flex items-center justify-center mx-auto mb-6">
+                    <i class="fas fa-shield-alt text-white text-2xl"></i>
+                </div>
+                <h3 class="text-xl font-semibold text-white mb-4">Secure & Private</h3>
+                <p class="text-white/80 leading-relaxed">
+                    Your health information is protected with industry-standard security and privacy measures.
+                </p>
+            </div>
+            
+            <!-- Feature Card 4 -->
+            <div class="bg-white/10 backdrop-blur-lg rounded-2xl p-8 text-center card-hover border border-white/20">
+                <div class="w-16 h-16 bg-gradient-to-r from-orange-500 to-orange-600 rounded-full flex items-center justify-center mx-auto mb-6">
+                    <i class="fas fa-mobile-alt text-white text-2xl"></i>
+                </div>
+                <h3 class="text-xl font-semibold text-white mb-4">Mobile Friendly</h3>
+                <p class="text-white/80 leading-relaxed">
+                    Access your appointments and manage your healthcare from any device, anywhere, anytime.
+                </p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Stats Section -->
+<div class="py-16 px-4">
+    <div class="max-w-4xl mx-auto">
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+            <div class="text-center">
+                <div class="text-4xl font-bold text-white mb-2">1000+</div>
+                <div class="text-white/80">Happy Patients</div>
+            </div>
+            <div class="text-center">
+                <div class="text-4xl font-bold text-white mb-2">50+</div>
+                <div class="text-white/80">Expert Doctors</div>
+            </div>
+            <div class="text-center">
+                <div class="text-4xl font-bold text-white mb-2">99%</div>
+                <div class="text-white/80">Satisfaction Rate</div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- CTA Section -->
+<div class="py-16 px-4">
+    <div class="max-w-4xl mx-auto text-center">
+        <div class="bg-white/10 backdrop-blur-lg rounded-3xl p-12 border border-white/20">
+            <h2 class="text-3xl font-bold text-white mb-6">Ready to Get Started?</h2>
+            <p class="text-xl text-white/80 mb-8">
+                Join thousands of patients who trust MediCare for their healthcare needs
+            </p>
+            <div class="flex flex-col sm:flex-row gap-4 justify-center">
+                <a href="{{ url_for('register') }}" 
+                   class="inline-flex items-center justify-center px-8 py-4 bg-gradient-to-r from-primary-500 to-primary-600 text-white font-semibold rounded-xl hover:from-primary-600 hover:to-primary-700 transition-all duration-200 hover:scale-105 shadow-lg">
+                    <i class="fas fa-rocket mr-3"></i>
+                    Start Your Journey
+                </a>
+                <a href="{{ url_for('login') }}" 
+                   class="inline-flex items-center justify-center px-8 py-4 bg-white/20 text-white font-semibold rounded-xl hover:bg-white/30 transition-all duration-200 border border-white/30">
+                    <i class="fas fa-info-circle mr-3"></i>
+                    Learn More
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
 {% endblock %}

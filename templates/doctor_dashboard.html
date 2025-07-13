@@ -1,119 +1,174 @@
 {% extends 'layout.html' %}
+{% block title %}Doctor Dashboard - MediCare Professional Healthcare{% endblock %}
+
 {% block content %}
-<h2>Welcome Dr. {{ name }}</h2>
-<h3>Appointments:</h3>
-<table border="1">
-    <tr>
-        <th>Patient</th>
-        <th>Date</th>
-        <th>Time</th>
-        <th>Reason</th>
-        <th>Status</th>
-        <th>Action</th>
-    </tr>
-    {% for app in appointments %}
-    <tr class="appointment-row status-{{ app.status.lower() }}">
-        <td>{{ app.patient_name }}</td>
-        <td>{{ app.date }}</td>
-        <td><strong>{{ app.time_slot or 'Not specified' }}</strong></td>
-        <td>{{ app.reason }}</td>
-        <td>
-            <span class="status-badge status-{{ app.status.lower() }}">
-                {{ app.status }}
-            </span>
-        </td>
-        <td>
-            {% if app.status == 'Pending' %}
-                <a href="{{ url_for('update_status', appointment_id=app.id, status='Approved') }}" class="btn btn-approve">Approve</a>
-                <a href="{{ url_for('update_status', appointment_id=app.id, status='Rejected') }}" class="btn btn-reject">Reject</a>
-            {% endif %}
-            <a href="{{ url_for('delete_appointment', appointment_id=app.id) }}" class="btn btn-delete" onclick="return confirm('Are you sure you want to delete this appointment?')">Delete</a>
-        </td>
-    </tr>
-    {% endfor %}
-    {% if not appointments %}
-    <tr>
-        <td colspan="6" style="text-align: center; color: #666; font-style: italic;">No appointments found</td>
-    </tr>
+<!-- Dashboard Header -->
+<div class="text-center mb-12 animate-fade-in">
+    <div class="inline-flex items-center justify-center w-20 h-20 bg-gradient-to-r from-secondary-500 to-secondary-600 rounded-full mb-6">
+        <i class="fas fa-user-md text-white text-3xl"></i>
+    </div>
+    <h1 class="text-4xl md:text-5xl font-bold text-white mb-4">
+        Welcome, Dr. {{ name }}
+    </h1>
+    <p class="text-xl text-white/80 max-w-2xl mx-auto">
+        Manage your patient appointments and schedule efficiently
+    </p>
+</div>
+
+<!-- Flash Messages -->
+{% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+        {% for category, message in messages %}
+            <div class="mb-8 p-4 rounded-xl border-l-4 {% if category == 'success' %}bg-green-50 border-green-400 text-green-700{% elif category == 'error' %}bg-red-50 border-red-400 text-red-700{% else %}bg-blue-50 border-blue-400 text-blue-700{% endif %}">
+                <div class="flex items-center">
+                    <i class="fas fa-{% if category == 'success' %}check-circle{% elif category == 'error' %}exclamation-circle{% else %}info-circle{% endif %} mr-3"></i>
+                    <span class="font-medium">{{ message }}</span>
+                </div>
+            </div>
+        {% endfor %}
     {% endif %}
-</table>
+{% endwith %}
 
-<style>
-.appointment-row {
-    transition: background-color 0.3s ease;
-}
+<!-- Statistics Cards -->
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-12">
+    <div class="bg-white/10 backdrop-blur-lg rounded-2xl p-6 text-center card-hover border border-white/20">
+        <div class="w-12 h-12 bg-gradient-to-r from-secondary-500 to-secondary-600 rounded-full flex items-center justify-center mx-auto mb-4">
+            <i class="fas fa-calendar-check text-white text-xl"></i>
+        </div>
+        <div class="text-3xl font-bold text-white mb-2">{{ appointments|length }}</div>
+        <div class="text-white/80 font-medium">Total Appointments</div>
+    </div>
+    
+    <div class="bg-white/10 backdrop-blur-lg rounded-2xl p-6 text-center card-hover border border-white/20">
+        <div class="w-12 h-12 bg-gradient-to-r from-yellow-500 to-yellow-600 rounded-full flex items-center justify-center mx-auto mb-4">
+            <i class="fas fa-clock text-white text-xl"></i>
+        </div>
+        <div class="text-3xl font-bold text-white mb-2">{{ appointments|selectattr('status', 'equalto', 'Pending')|list|length }}</div>
+        <div class="text-white/80 font-medium">Pending Review</div>
+    </div>
+    
+    <div class="bg-white/10 backdrop-blur-lg rounded-2xl p-6 text-center card-hover border border-white/20">
+        <div class="w-12 h-12 bg-gradient-to-r from-green-500 to-green-600 rounded-full flex items-center justify-center mx-auto mb-4">
+            <i class="fas fa-check-circle text-white text-xl"></i>
+        </div>
+        <div class="text-3xl font-bold text-white mb-2">{{ appointments|selectattr('status', 'equalto', 'Approved')|list|length }}</div>
+        <div class="text-white/80 font-medium">Approved</div>
+    </div>
+    
+    <div class="bg-white/10 backdrop-blur-lg rounded-2xl p-6 text-center card-hover border border-white/20">
+        <div class="w-12 h-12 bg-gradient-to-r from-red-500 to-red-600 rounded-full flex items-center justify-center mx-auto mb-4">
+            <i class="fas fa-times-circle text-white text-xl"></i>
+        </div>
+        <div class="text-3xl font-bold text-white mb-2">{{ appointments|selectattr('status', 'equalto', 'Rejected')|list|length }}</div>
+        <div class="text-white/80 font-medium">Rejected</div>
+    </div>
+</div>
 
-.appointment-row:hover {
-    background-color: #f0f8ff;
-}
-
-.status-badge {
-    padding: 4px 8px;
-    border-radius: 4px;
-    font-size: 0.85em;
-    font-weight: bold;
-    text-transform: uppercase;
-}
-
-.status-pending {
-    background-color: #fff3cd;
-    color: #856404;
-}
-
-.status-approved {
-    background-color: #d4edda;
-    color: #155724;
-}
-
-.status-rejected {
-    background-color: #f8d7da;
-    color: #721c24;
-}
-
-.btn {
-    padding: 6px 12px;
-    margin: 2px;
-    text-decoration: none;
-    border-radius: 4px;
-    font-size: 0.9em;
-    font-weight: 500;
-    display: inline-block;
-    transition: all 0.3s ease;
-}
-
-.btn-approve {
-    background-color: #28a745;
-    color: white;
-}
-
-.btn-approve:hover {
-    background-color: #218838;
-    text-decoration: none;
-}
-
-.btn-reject {
-    background-color: #dc3545;
-    color: white;
-}
-
-.btn-reject:hover {
-    background-color: #c82333;
-    text-decoration: none;
-}
-
-.btn-delete {
-    background-color: #6c757d;
-    color: white;
-}
-
-.btn-delete:hover {
-    background-color: #5a6268;
-    text-decoration: none;
-}
-
-table td:nth-child(3) {
-    color: #0077cc;
-    font-weight: 600;
-}
-</style>
+<!-- Appointments Section -->
+<div class="bg-white/10 backdrop-blur-lg rounded-3xl p-8 border border-white/20 shadow-2xl">
+    <div class="flex items-center justify-between mb-8">
+        <h2 class="text-2xl font-bold text-white flex items-center">
+            <i class="fas fa-calendar-alt mr-3 text-secondary-300"></i>
+            Patient Appointments
+        </h2>
+    </div>
+    
+    {% if appointments %}
+        <div class="overflow-x-auto">
+            <table class="w-full">
+                <thead>
+                    <tr class="border-b border-white/20">
+                        <th class="text-left py-4 px-6 text-white/80 font-semibold">
+                            <i class="fas fa-user mr-2 text-secondary-300"></i>Patient
+                        </th>
+                        <th class="text-left py-4 px-6 text-white/80 font-semibold">
+                            <i class="fas fa-calendar mr-2 text-secondary-300"></i>Date
+                        </th>
+                        <th class="text-left py-4 px-6 text-white/80 font-semibold">
+                            <i class="fas fa-clock mr-2 text-secondary-300"></i>Time
+                        </th>
+                        <th class="text-left py-4 px-6 text-white/80 font-semibold">
+                            <i class="fas fa-sticky-note mr-2 text-secondary-300"></i>Reason
+                        </th>
+                        <th class="text-left py-4 px-6 text-white/80 font-semibold">
+                            <i class="fas fa-info-circle mr-2 text-secondary-300"></i>Status
+                        </th>
+                        <th class="text-left py-4 px-6 text-white/80 font-semibold">
+                            <i class="fas fa-cogs mr-2 text-secondary-300"></i>Actions
+                        </th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for app in appointments %}
+                    <tr class="border-b border-white/10 hover:bg-white/5 transition-colors duration-200">
+                        <td class="py-4 px-6">
+                            <div class="flex items-center text-white">
+                                <i class="fas fa-user mr-3 text-secondary-300"></i>
+                                <span class="font-medium">{{ app.patient_name }}</span>
+                            </div>
+                        </td>
+                        <td class="py-4 px-6">
+                            <div class="flex items-center text-white">
+                                <i class="fas fa-calendar mr-3 text-secondary-300"></i>
+                                <span>{{ app.date }}</span>
+                            </div>
+                        </td>
+                        <td class="py-4 px-6">
+                            <div class="flex items-center">
+                                <i class="fas fa-clock mr-3 text-secondary-300"></i>
+                                <span class="font-semibold text-secondary-300">{{ app.time_slot or 'Not specified' }}</span>
+                            </div>
+                        </td>
+                        <td class="py-4 px-6">
+                            <div class="flex items-center text-white">
+                                <i class="fas fa-sticky-note mr-3 text-secondary-300"></i>
+                                <span>{{ app.reason }}</span>
+                            </div>
+                        </td>
+                        <td class="py-4 px-6">
+                            <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold
+                                {% if app.status == 'Pending' %}bg-yellow-100 text-yellow-800{% elif app.status == 'Approved' %}bg-green-100 text-green-800{% else %}bg-red-100 text-red-800{% endif %}">
+                                <i class="fas fa-{% if app.status == 'Pending' %}clock{% elif app.status == 'Approved' %}check{% else %}times{% endif %} mr-2"></i>
+                                {{ app.status }}
+                            </span>
+                        </td>
+                        <td class="py-4 px-6">
+                            <div class="flex flex-wrap gap-2">
+                                {% if app.status == 'Pending' %}
+                                    <a href="{{ url_for('update_status', appointment_id=app.id, status='Approved') }}" 
+                                       class="inline-flex items-center px-3 py-1 bg-green-500 hover:bg-green-600 text-white text-sm font-medium rounded-lg transition-colors duration-200">
+                                        <i class="fas fa-check mr-1"></i>
+                                        Approve
+                                    </a>
+                                    <a href="{{ url_for('update_status', appointment_id=app.id, status='Rejected') }}" 
+                                       class="inline-flex items-center px-3 py-1 bg-yellow-500 hover:bg-yellow-600 text-white text-sm font-medium rounded-lg transition-colors duration-200">
+                                        <i class="fas fa-times mr-1"></i>
+                                        Reject
+                                    </a>
+                                {% endif %}
+                                <a href="{{ url_for('delete_appointment', appointment_id=app.id) }}" 
+                                   class="inline-flex items-center px-3 py-1 bg-red-500 hover:bg-red-600 text-white text-sm font-medium rounded-lg transition-colors duration-200"
+                                   onclick="return confirm('Are you sure you want to delete this appointment?')">
+                                    <i class="fas fa-trash mr-1"></i>
+                                    Delete
+                                </a>
+                            </div>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    {% else %}
+        <div class="text-center py-16">
+            <div class="w-24 h-24 bg-white/10 rounded-full flex items-center justify-center mx-auto mb-6">
+                <i class="fas fa-calendar-times text-white/60 text-4xl"></i>
+            </div>
+            <h3 class="text-2xl font-bold text-white mb-4">No Appointments Found</h3>
+            <p class="text-white/80 mb-8 max-w-md mx-auto">
+                You don't have any patient appointments scheduled yet. They will appear here once patients book appointments with you.
+            </p>
+        </div>
+    {% endif %}
+</div>
 {% endblock %}
